@@ -1,10 +1,22 @@
 import React from 'react';
-import {View, Text, StyleSheet, FlatList, Image} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import strings from '../res/strings';
 
-export default function ItemComponent({items}) {
+export default function ItemComponent({users}) {
+  const navigation = useNavigation();
+
   const renderEntity = ({item, index}) => {
     return (
       <View>
+         <TouchableOpacity
+         onPress={() => {
+          navigation.navigate(strings.screens.add_item, {
+            isEditUser: true,
+            userData: item,
+          });
+        }}>
+
         <View style={styles.container}>
           <View style={styles.subContainer}>
             <Image
@@ -16,23 +28,25 @@ export default function ItemComponent({items}) {
                 {item.firstName + ' ' + item.lastName}
               </Text>
               <Text style={styles.textStyle}>{item.dob}</Text>
-              <Text style={styles.textStyle}>{item.married ? 'Married' : 'Unmarried'}</Text>
+              <Text style={styles.textStyle}>{item.married ? strings.user.married : strings.user.unmarried}</Text>
             </View>
           </View>
         </View>
+        </TouchableOpacity>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      {items && (
+      {users && (
         <View style={styles.listContainer}>
           <FlatList
-            data={items}
+            data={users}
             renderItem={renderEntity}
             keyExtractor={item => item.id}
             removeClippedSubviews={true}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       )}
@@ -41,16 +55,6 @@ export default function ItemComponent({items}) {
 }
 
 const styles = StyleSheet.create({
-  itemsList: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-  itemtext: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -66,16 +70,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 20,
     width: '100%',
-  },
-  entityContainer: {
-    marginTop: 16,
-    borderBottomColor: '#cccccc',
-    borderBottomWidth: 1,
-    paddingBottom: 16,
-  },
-  entityText: {
-    fontSize: 20,
-    color: '#333333',
   },
   logo: {
     height: 80,

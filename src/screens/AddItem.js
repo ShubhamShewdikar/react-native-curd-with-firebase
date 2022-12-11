@@ -11,6 +11,7 @@ import {
 import database from '@react-native-firebase/database';
 import DatePicker from 'react-native-datepicker';
 import CheckBox from '@react-native-community/checkbox';
+import strings from '../res/strings';
 
 let addItem = item => {
   database().ref('/items').push({
@@ -21,7 +22,8 @@ let addItem = item => {
   });
 };
 
-export default function AddItem() {
+export default function AddItem({ route }) {
+  const { isEditUser, userData} = route.params;  
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dob, setDOB] = useState('');
@@ -35,8 +37,8 @@ export default function AddItem() {
   };
 
   const handleSubmit = () => {
-    addItem(data);
-    Alert.alert('Item saved successfully');
+    {data.firstName && data.lastName && data.dob ? addItem(data) : Alert.alert(strings.all_field_required); }
+    {data.firstName && data.lastName && data.dob && Alert.alert(strings.user_added_msg); }
   };
 
   return (
@@ -48,27 +50,27 @@ export default function AddItem() {
         />
         <TextInput
           style={styles.input}
-          placeholder="First Name"
+          placeholder={strings.user.first_name}
           placeholderTextColor="#aaaaaa"
           onChangeText={text => setFirstName(text)}
-          value={firstName}
+          value={isEditUser ? userData.firstName : firstName}
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
         <TextInput
           style={styles.input}
-          placeholder="Last Name"
+          placeholder={strings.user.last_name}
           placeholderTextColor="#aaaaaa"
           onChangeText={text => setLastName(text)}
-          value={lastName}
+          value={isEditUser ? userData.lastName : lastName}
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
         <DatePicker
           style={[styles.input, styles.datePickerStyle]}
-          date={dob} // Initial date from state
+          date={isEditUser ? userData.dob : dob} // Initial date from state
           mode="date" // The enum of date, datetime and time
-          placeholder="select DOB"
+          placeholder={strings.user.last_name}
           format="DD-MM-YYYY"
           minDate="01-01-1930"
           maxDate="12-12-2022"
@@ -103,15 +105,14 @@ export default function AddItem() {
         <CheckBox
         style={styles.checkbox}
         disabled={false}
-        value={married}
+        value={isEditUser ? userData.married : married}
         onValueChange={(newValue) => setMarried(newValue)}
         />
-        <Text style={styles.label}>Married</Text>
+        <Text style={styles.label}>{strings.user.married}</Text>
       </View>
         
-        
         <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
-          <Text style={styles.buttonTitle}>ADD USER</Text>
+          <Text style={styles.buttonTitle}>{isEditUser ? strings.save : strings.add_user}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -119,33 +120,6 @@ export default function AddItem() {
 }
 
 const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    padding: 30,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    backgroundColor: '#6565fc',
-  },
-  title: {
-    marginBottom: 20,
-    fontSize: 25,
-    textAlign: 'center',
-  },
-  itemInput: {
-    height: 50,
-    padding: 4,
-    marginRight: 5,
-    fontSize: 23,
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 8,
-    color: 'white',
-  },
-  buttonText: {
-    fontSize: 18,
-    color: '#111',
-    alignSelf: 'center',
-  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -184,20 +158,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  footerView: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    fontSize: 16,
-    color: '#2e2e2d',
-  },
-  footerLink: {
-    color: '#788eec',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   datePickerStyle: {
     width: '85%',

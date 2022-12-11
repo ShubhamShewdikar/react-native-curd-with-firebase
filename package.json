@@ -11,6 +11,7 @@
     "clean": "react-native-clean-project"
   },
   "dependencies": {
+    "@react-native-community/checkbox": "^0.5.14",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-firebase/app": "12.3.0",
     "@react-native-firebase/database": "12.3.0",
