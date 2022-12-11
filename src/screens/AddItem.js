@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import database from '@react-native-firebase/database';
+import DatePicker from 'react-native-datepicker';
 
 let addItem = item => {
   database().ref('/items').push({
@@ -62,14 +63,40 @@ export default function AddItem() {
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="DOB"
-          placeholderTextColor="#aaaaaa"
-          onChangeText={text => setDOB(text)}
-          value={dob}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+        <DatePicker
+          style={[styles.input, styles.datePickerStyle]}
+          date={dob} // Initial date from state
+          mode="date" // The enum of date, datetime and time
+          placeholder="select DOB"
+          format="DD-MM-YYYY"
+          minDate="01-01-1930"
+          maxDate="12-12-2022"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
+          customStyles={{
+            dateIcon: {
+              position: 'absolute',
+              left: 0,
+              marginLeft: 0,
+              width: 30,
+              height: 30,
+            },
+            dateText:{
+              fontSize: 14,
+              alignSelf: 'flex-start',
+              marginLeft: 40,
+            },
+            placeholderText: {
+              alignSelf: 'flex-start',
+              marginLeft: 40,
+            },
+            dateInput: {
+              borderWidth: 0,
+            }
+          }}
+          onDateChange={(dob) => {
+            setDOB(dob);
+          }}
         />
         <TextInput
           style={styles.input}
@@ -169,5 +196,9 @@ const styles = StyleSheet.create({
     color: '#788eec',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  datePickerStyle: {
+    width: '85%',
+    marginTop: 20,
   },
 });
