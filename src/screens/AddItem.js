@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import database from '@react-native-firebase/database';
 import DatePicker from 'react-native-datepicker';
+import CheckBox from '@react-native-community/checkbox';
 
 let addItem = item => {
   database().ref('/items').push({
@@ -24,7 +25,7 @@ export default function AddItem() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dob, setDOB] = useState('');
-  const [married, setMarried] = useState('');
+  const [married, setMarried] = useState(false);
 
   const data = {
     firstName: firstName,
@@ -98,17 +99,19 @@ export default function AddItem() {
             setDOB(dob);
           }}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Married"
-          placeholderTextColor="#aaaaaa"
-          onChangeText={text => setMarried(text)}
-          value={married}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+        <View style={styles.checkboxContainer}>
+        <CheckBox
+        style={styles.checkbox}
+        disabled={false}
+        value={married}
+        onValueChange={(newValue) => setMarried(newValue)}
         />
+        <Text style={styles.label}>Married</Text>
+      </View>
+        
+        
         <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
-          <Text style={styles.buttonTitle}>Create account</Text>
+          <Text style={styles.buttonTitle}>ADD USER</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -164,8 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginTop: 10,
     marginBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
+    marginHorizontal: 30,
     paddingLeft: 16,
   },
   button: {
@@ -200,5 +202,18 @@ const styles = StyleSheet.create({
   datePickerStyle: {
     width: '85%',
     marginTop: 20,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    marginVertical: 20,
+    marginHorizontal: 30,
+  },
+  checkbox: {
+    alignSelf: "center",
+  },
+  label: {
+    marginLeft: 15,
+    fontSize: 16,
+    alignSelf: "center",
   },
 });

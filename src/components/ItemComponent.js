@@ -16,7 +16,7 @@ export default function ItemComponent({items}) {
                 {item.firstName + ' ' + item.lastName}
               </Text>
               <Text style={styles.textStyle}>{item.dob}</Text>
-              <Text style={styles.textStyle}>{item.married}</Text>
+              <Text style={styles.textStyle}>{item.married ? 'Married' : 'Unmarried'}</Text>
             </View>
           </View>
         </View>
