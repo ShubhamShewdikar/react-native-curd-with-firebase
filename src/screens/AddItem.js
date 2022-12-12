@@ -7,11 +7,16 @@ import {
   Alert,
   Image,
   TouchableOpacity,
+  Button
 } from 'react-native';
 import database from '@react-native-firebase/database';
 import DatePicker from 'react-native-datepicker';
 import CheckBox from '@react-native-community/checkbox';
 import strings from '../res/strings';
+import storage from '@react-native-firebase/storage';
+// import ImagePicker from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
 
 let addItem = item => {
   database().ref('/items').push({
@@ -28,6 +33,9 @@ export default function AddItem({ route }) {
   const [lastName, setLastName] = useState('');
   const [dob, setDOB] = useState('');
   const [married, setMarried] = useState(false);
+  const [imagePath, setImagePath] = useState();
+  const [isLoading, setLoading] = useState(false);
+  const [status, setStatus] = useState('');
 
   const data = {
     firstName: firstName,
@@ -41,13 +49,92 @@ export default function AddItem({ route }) {
     {data.firstName && data.lastName && data.dob && Alert.alert(strings.user_added_msg); }
   };
 
+
+  chooseFile = () => {
+    console.log('Choose file');
+    setStatus('')
+    var options = {
+        title: 'Select Image',
+        customButtons: [
+            { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+        ],
+        storageOptions: {
+            skipBackup: true, // do not backup to iCloud
+            path: 'images', // store camera images under Pictures/images for android and Documents/images for iOS
+        },
+    };
+    ImagePicker.showImagePicker(options, response => {
+        if (response.didCancel) {
+            console.log('User cancelled image picker', storage());
+        } else if (response.error) {
+            console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+            console.log('User tapped custom button: ', response.customButton);
+        } else {
+            let path = this.getPlatformPath(response).value;
+            let fileName = this.getFileName(response.fileName, path);
+            setImagePath(path)
+            this.uploadImageToStorage(path, fileName);
+        }
+    });
+};
+
+getFileName = (name, path) => {
+    if (name != null) { return name; }
+
+    if (Platform.OS === "ios") {
+        path = "~" + path.substring(path.indexOf("/Documents"));
+    }
+    return path.split("/").pop();
+};
+
+uploadImageToStorage = (path, name) => {
+    setLoading(true)
+    let reference = storage().ref(name);
+    let task = reference.putFile(path);
+    task.then(() => {
+        console.log('Image uploaded to the bucket!');
+        setLoading(false)
+        setStatus('Image uploaded successfully')
+    }).catch((e) => {
+        status = 'Something went wrong';
+        console.log('uploading image error => ', e);
+        setLoading(false)
+        setStatus('Something went wrong')
+    });
+};
+
+/**
+ * Get platform specific value from response
+ */
+getPlatformPath = ({ path, uri }) => {
+    return Platform.select({
+        android: { "value": path },
+        ios: { "value": uri }
+    })
+};
+
+getPlatformURI = (imagePath) => {
+    let imgSource = imagePath;
+    if (isNaN(imagePath)) {
+        imgSource = { uri: this.state.imagePath };
+        if (Platform.OS == 'android') {
+            imgSource.uri = "file:///" + imgSource.uri;
+        }
+    }
+    return imgSource
+};
+
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
         <Image
           style={styles.logo}
+          // source={() => this.getPlatformURI(imagePath)}
           source={require('../../assets/profile_icon.png')}
         />
+         <Button title={'Upload Image'} onPress={() => this.chooseFile}></Button>
+
         <TextInput
           style={styles.input}
           placeholder={strings.user.first_name}
