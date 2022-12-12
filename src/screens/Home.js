@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {Button, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import List from './List';
-import strings from '../res/strings';
+import React, { Component } from "react";
+import { Button, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import List from "./List";
+import strings from "../res/strings";
 
 export default class Home extends Component {
   render() {
@@ -9,10 +9,13 @@ export default class Home extends Component {
       <View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => this.props.navigation.navigate(strings.screens.add_item, {
-            isEditUser: false,
-            userData: [],
-          })}>
+          onPress={() =>
+            this.props.navigation.navigate(strings.screens.add_item, {
+              isEditUser: false,
+              userData: [],
+            })
+          }
+        >
           <Text style={styles.buttonTitle}>{strings.add_new_user}</Text>
         </TouchableOpacity>
         <View style={styles.listView}>
@@ -25,20 +28,20 @@ export default class Home extends Component {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#008eec',
+    backgroundColor: "#008eec",
     marginHorizontal: 30,
     marginTop: 20,
     height: 48,
     borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonTitle: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   listView: {
-    height: '90%',
+    height: "90%",
   },
 });
