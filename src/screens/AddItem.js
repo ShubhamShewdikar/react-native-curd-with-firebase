@@ -24,6 +24,7 @@ let addItem = (item) => {
     lastName: item.lastName,
     dob: item.dob,
     married: item.married,
+    avatar: item.avatar,
   });
 };
 
@@ -40,12 +41,26 @@ export default function AddItem({ route }) {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
+  const [avatar, setAvatar] = useState(null);
+
+  if (isEditUser) {
+    let imageRef = storage().ref("/" + userData.avatar);
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        const source = { uri: url };
+        setImage(source)
+      })
+      .catch((e) => console.log("getting downloadURL of image error => ", e));
+  }
 
   const data = {
     firstName: firstName,
     lastName: lastName,
     dob: dob,
     married: married,
+    avatar: avatar,
   };
 
   const handleSubmit = () => {
@@ -95,6 +110,7 @@ export default function AddItem({ route }) {
     setUploading(true);
     setTransferred(0);
     const task = storage().ref(filename).putFile(uploadUri);
+    setAvatar(filename);
     // set progress state
     task.on("state_changed", (snapshot) => {
       setTransferred(
@@ -116,7 +132,15 @@ export default function AddItem({ route }) {
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        <TouchableOpacity style={{width: 120, height: 120, alignSelf: "center", marginBottom: 30}} onPress={selectImage}>
+        <TouchableOpacity
+          style={{
+            width: 120,
+            height: 120,
+            alignSelf: "center",
+            marginBottom: 30,
+          }}
+          onPress={selectImage}
+        >
           <Image
             style={styles.logo}
             source={image ? image : require("../../assets/profile_icon.png")}
