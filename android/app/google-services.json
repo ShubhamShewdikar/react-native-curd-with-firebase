@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "10157787003",
+    "firebase_url": "https://userlist-d7b56-default-rtdb.firebaseio.com",
+    "project_id": "userlist-d7b56",
+    "storage_bucket": "userlist-d7b56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10157787003:android:f8e70a5f12c125c967dfde",
+        "android_client_info": {
+          "package_name": "com.demoApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10157787003-gqudci9hapuo9kjb5bgstr2i2j5t52g1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH2SQy5NRk_a6RJw17gsgnC8ksu1x-ans"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10157787003-gqudci9hapuo9kjb5bgstr2i2j5t52g1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "10157787003-j4d3vsj4nk3tcop3u6dkfkeal9ajonfe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.demoApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10157787003:android:9330dad20e4916ae67dfde",
+        "android_client_info": {
+          "package_name": "com.userscrud"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10157787003-gqudci9hapuo9kjb5bgstr2i2j5t52g1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH2SQy5NRk_a6RJw17gsgnC8ksu1x-ans"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10157787003-gqudci9hapuo9kjb5bgstr2i2j5t52g1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "10157787003-j4d3vsj4nk3tcop3u6dkfkeal9ajonfe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.demoApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
