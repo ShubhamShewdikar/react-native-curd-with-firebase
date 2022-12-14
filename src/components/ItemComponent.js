@@ -6,13 +6,35 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import strings from '../res/strings';
 import Moment from 'moment';
+import database from '@react-native-firebase/database';
 
 export default function ItemComponent({users}) {
   const navigation = useNavigation();
+
+  const handleDelete = async item => {
+    database()
+      .ref('/items')
+      .on('value', snapshot => {
+        snapshot.forEach(async itemVal => {
+          if (
+            itemVal.val().firstName === item.firstName &&
+            itemVal.val().lastName === item.lastName
+          ) {
+            await database()
+              .ref('/items/' + item.nodeID)
+              .remove();
+
+            navigation.navigate(strings.screens.home, {});
+            Alert.alert(strings.user_deleted_msg);
+          }
+        });
+      });
+  };
 
   const renderEntity = ({item, index}) => {
     return (
@@ -40,6 +62,14 @@ export default function ItemComponent({users}) {
                 <Text style={styles.textStyle}>
                   {item.married ? strings.user.married : strings.user.unmarried}
                 </Text>
+              </View>
+              <View style={styles.deleteView}>
+                <TouchableOpacity onPress={() => handleDelete(item)}>
+                  <Image
+                    style={styles.deleteLogo}
+                    source={require('../../assets/delete.png')}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -101,5 +131,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     paddingBottom: 5,
+  },
+  deleteView: {
+    alignSelf: 'center',
+    position: 'absolute',
+    flex: 1,
+    flexDirection: 'row',
+    marginRight: 15,
+    right: 0,
+  },
+  deleteLogo: {
+    height: 20,
+    width: 20,
   },
 });
