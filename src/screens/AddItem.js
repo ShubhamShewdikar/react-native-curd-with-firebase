@@ -87,7 +87,7 @@ export default function AddItem({route}) {
         data.lastName &&
         data.dob &&
         navigation.navigate(strings.screens.home, {});
-        Alert.alert(strings.user_added_msg);
+      Alert.alert(strings.user_added_msg);
     }
   };
 
