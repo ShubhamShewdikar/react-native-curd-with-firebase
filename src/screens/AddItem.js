@@ -17,6 +17,7 @@ import storage from '@react-native-firebase/storage';
 let ImagePicker = require('react-native-image-picker');
 import DatePicker from 'react-native-date-picker';
 import Moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
 
 let addItem = item => {
   const ref = database().ref('/items').push({
@@ -40,6 +41,8 @@ let addItem = item => {
 };
 
 export default function AddItem({route}) {
+  const navigation = useNavigation();
+
   const {isEditUser, userData} = route.params;
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -83,6 +86,7 @@ export default function AddItem({route}) {
       data.firstName &&
         data.lastName &&
         data.dob &&
+        navigation.navigate(strings.screens.home, {});
         Alert.alert(strings.user_added_msg);
     }
   };
@@ -99,6 +103,8 @@ export default function AddItem({route}) {
             await database()
               .ref('/items/' + userData.nodeID)
               .remove();
+
+            navigation.navigate(strings.screens.home, {});
             Alert.alert(strings.user_deleted_msg);
           }
         });
