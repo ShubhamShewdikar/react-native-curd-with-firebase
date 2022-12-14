@@ -11,12 +11,9 @@ import {
   Platform,
 } from 'react-native';
 import database from '@react-native-firebase/database';
-// import DatePicker from 'react-native-datepicker';
 import CheckBox from '@react-native-community/checkbox';
 import strings from '../res/strings';
 import storage from '@react-native-firebase/storage';
-// import ImagePicker from 'react-native-image-picker';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 let ImagePicker = require('react-native-image-picker');
 import DatePicker from 'react-native-date-picker';
 import Moment from 'moment';
