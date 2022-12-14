@@ -16,6 +16,8 @@ const strings = {
   user_added_msg: 'User added successfully.',
   save: 'SAVE',
   add_user: 'ADD USER',
+  delete: 'DELETE',
+  user_deleted_msg: 'User deleted successfully.',
 };
 
 export default strings;

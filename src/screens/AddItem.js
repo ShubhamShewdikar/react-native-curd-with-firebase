@@ -19,13 +19,24 @@ import DatePicker from 'react-native-date-picker';
 import Moment from 'moment';
 
 let addItem = item => {
-  database().ref('/items').push({
+  const ref = database().ref('/items').push({
     firstName: item.firstName,
     lastName: item.lastName,
     dob: item.dob.toString(),
     married: item.married,
     avatar: item.avatar,
+    nodeID: '0',
   });
+  ref
+    .set({
+      firstName: item.firstName,
+      lastName: item.lastName,
+      dob: item.dob.toString(),
+      married: item.married,
+      avatar: item.avatar,
+      nodeID: ref.key,
+    })
+    .then(() => console.log('Data updated.'));
 };
 
 export default function AddItem({route}) {
@@ -63,7 +74,6 @@ export default function AddItem({route}) {
   };
 
   const handleSubmit = () => {
-    console.log('>>>> data', data);
     {
       data.firstName && data.lastName && data.dob
         ? addItem(data)
@@ -75,6 +85,24 @@ export default function AddItem({route}) {
         data.dob &&
         Alert.alert(strings.user_added_msg);
     }
+  };
+
+  const handleDelete = async () => {
+    database()
+      .ref('/items')
+      .on('value', snapshot => {
+        snapshot.forEach(async item => {
+          if (
+            item.val().firstName === userData.firstName &&
+            item.val().lastName === userData.lastName
+          ) {
+            await database()
+              .ref('/items/' + userData.nodeID)
+              .remove();
+            Alert.alert(strings.user_deleted_msg);
+          }
+        });
+      });
   };
 
   const selectImage = () => {
@@ -211,6 +239,13 @@ export default function AddItem({route}) {
             {isEditUser ? strings.save : strings.add_user}
           </Text>
         </TouchableOpacity>
+        {isEditUser && (
+          <TouchableOpacity
+            style={styles.buttonDelete}
+            onPress={() => handleDelete()}>
+            <Text style={styles.buttonTitle}>{strings.delete}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -289,5 +324,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  buttonDelete: {
+    backgroundColor: '#ff0000',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 5,
+    marginBottom: 20,
+    height: 48,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
