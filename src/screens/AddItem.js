@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -19,27 +19,6 @@ import DatePicker from 'react-native-date-picker';
 import Moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
 
-let addItem = item => {
-  const ref = database().ref('/items').push({
-    firstName: item.firstName,
-    lastName: item.lastName,
-    dob: item.dob.toString(),
-    married: item.married,
-    avatar: item.avatar,
-    nodeID: '0',
-  });
-  ref
-    .set({
-      firstName: item.firstName,
-      lastName: item.lastName,
-      dob: item.dob.toString(),
-      married: item.married,
-      avatar: item.avatar,
-      nodeID: ref.key,
-    })
-    .then(() => console.log('Data updated.'));
-};
-
 export default function AddItem({route}) {
   const navigation = useNavigation();
 
@@ -56,17 +35,25 @@ export default function AddItem({route}) {
   const [open, setOpen] = useState(false);
   Moment.locale('en');
 
-  if (isEditUser) {
-    let imageRef = storage().ref('/' + userData.avatar);
-    imageRef
-      .getDownloadURL()
-      .then(url => {
-        //from url you can fetched the uploaded image easily
-        const source = {uri: url};
-        setImage(source);
-      })
-      .catch(e => console.log('getting downloadURL of image error => ', e));
-  }
+  useEffect(() => {
+    if (isEditUser) {
+      let imageRef = storage().ref('/' + userData.avatar);
+      imageRef
+        .getDownloadURL()
+        .then(url => {
+          //from url you can fetched the uploaded image easily
+          const source = {uri: url};
+          setImage(source);
+        })
+        .catch(e => console.log('getting downloadURL of image error => ', e));
+
+      setFirstName(userData.firstName);
+      setLastName(userData.lastName);
+      //setDOB(userData.dob);
+      setMarried(userData.married);
+      setAvatar(userData.avatar);
+    }
+  }, [isEditUser, userData]);
 
   const data = {
     firstName: firstName,
@@ -76,10 +63,50 @@ export default function AddItem({route}) {
     avatar: avatar,
   };
 
+  let addItem = item => {
+    const ref = database().ref('/items').push({
+      firstName: item.firstName,
+      lastName: item.lastName,
+      dob: item.dob.toString(),
+      married: item.married,
+      avatar: item.avatar,
+      nodeID: '0',
+    });
+    ref
+      .set({
+        firstName: item.firstName,
+        lastName: item.lastName,
+        dob: item.dob.toString(),
+        married: item.married,
+        avatar: item.avatar,
+        nodeID: ref.key,
+      })
+      .then(() => console.log('Data updated.'));
+  };
+
+  let editItem = item => {
+    console.log('>>>> edit item', item);
+    console.log('>>>> item nonde', database().ref('/items/' + userData.nodeID));
+    database()
+      .ref('/items/' + userData.nodeID)
+      .update({
+        firstName: item.firstName,
+        lastName: item.lastName,
+        dob: item.dob.toString(),
+        married: item.married,
+        avatar: item.avatar,
+        nodeID: userData.nodeID,
+      })
+      .then(() => console.log('Data updated.'));
+    Alert.alert('User data updated');
+  };
+
   const handleSubmit = () => {
     {
       data.firstName && data.lastName && data.dob
-        ? addItem(data)
+        ? isEditUser
+          ? editItem(data)
+          : addItem(data)
         : Alert.alert(strings.all_field_required);
     }
     {
@@ -89,26 +116,6 @@ export default function AddItem({route}) {
         navigation.navigate(strings.screens.home, {});
       Alert.alert(strings.user_added_msg);
     }
-  };
-
-  const handleDelete = async () => {
-    database()
-      .ref('/items')
-      .on('value', snapshot => {
-        snapshot.forEach(async item => {
-          if (
-            item.val().firstName === userData.firstName &&
-            item.val().lastName === userData.lastName
-          ) {
-            await database()
-              .ref('/items/' + userData.nodeID)
-              .remove();
-
-            navigation.navigate(strings.screens.home, {});
-            Alert.alert(strings.user_deleted_msg);
-          }
-        });
-      });
   };
 
   const selectImage = () => {
@@ -129,8 +136,6 @@ export default function AddItem({route}) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
         const source = {uri: response.assets[0]?.uri};
-        console.log('response', response);
-        console.log('response.assets?.uri ', response.assets[0]?.uri);
         console.log(source);
         setImage(source);
       }
@@ -190,7 +195,7 @@ export default function AddItem({route}) {
           placeholder={strings.user.first_name}
           placeholderTextColor="#aaaaaa"
           onChangeText={text => setFirstName(text)}
-          value={isEditUser ? userData.firstName : firstName}
+          defaultValue={firstName}
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
@@ -199,7 +204,7 @@ export default function AddItem({route}) {
           placeholder={strings.user.last_name}
           placeholderTextColor="#aaaaaa"
           onChangeText={text => setLastName(text)}
-          value={isEditUser ? userData.lastName : lastName}
+          value={lastName}
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
@@ -234,7 +239,7 @@ export default function AddItem({route}) {
           <CheckBox
             style={styles.checkbox}
             disabled={false}
-            value={isEditUser ? userData.married : married}
+            value={married}
             onValueChange={newValue => setMarried(newValue)}
           />
           <Text style={styles.label}>{strings.user.married}</Text>
@@ -245,13 +250,6 @@ export default function AddItem({route}) {
             {isEditUser ? strings.save : strings.add_user}
           </Text>
         </TouchableOpacity>
-        {isEditUser && (
-          <TouchableOpacity
-            style={styles.buttonDelete}
-            onPress={() => handleDelete()}>
-            <Text style={styles.buttonTitle}>{strings.delete}</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );

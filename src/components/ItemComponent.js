@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,13 @@ import {useNavigation} from '@react-navigation/native';
 import strings from '../res/strings';
 import Moment from 'moment';
 import database from '@react-native-firebase/database';
+import storage from '@react-native-firebase/storage';
 
 export default function ItemComponent({users}) {
   const navigation = useNavigation();
+  const [image, setImage] = useState(null);
 
-  const handleDelete = async item => {
+  const handleDelete = item => {
     database()
       .ref('/items')
       .on('value', snapshot => {
@@ -25,18 +27,31 @@ export default function ItemComponent({users}) {
             itemVal.val().firstName === item.firstName &&
             itemVal.val().lastName === item.lastName
           ) {
-            await database()
+            database()
               .ref('/items/' + item.nodeID)
               .remove();
 
             navigation.navigate(strings.screens.home, {});
-            Alert.alert(strings.user_deleted_msg);
           }
         });
+        Alert.alert(strings.user_deleted_msg);
       });
   };
 
+  const getImage = avatar => {
+    let imageRef = storage().ref('/' + avatar);
+    imageRef
+      .getDownloadURL()
+      .then(url => {
+        //from url you can fetched the uploaded image easily
+        const source = {uri: url};
+        setImage(source);
+      })
+      .catch(e => console.log('getting downloadURL of image error => ', e));
+  };
+
   const renderEntity = ({item, index}) => {
+    console.log('>>>> item skdjhkshkhdkfhsk', item);
     return (
       <View>
         <TouchableOpacity
@@ -50,7 +65,13 @@ export default function ItemComponent({users}) {
             <View style={styles.subContainer}>
               <Image
                 style={styles.logo}
-                source={require('../../assets/profile_icon.png')}
+                source={
+                  item.avatar
+                    ? {
+                        uri: `https://firebasestorage.googleapis.com/v0/b/userlist-d7b56.appspot.com/o/${item.avatar}?alt=media&token=a4db048d-0eec-469b-a10d-2771ec18173d`,
+                      }
+                    : require('../../assets/profile_icon.png')
+                }
               />
               <View style={styles.detailsView}>
                 <Text style={styles.buttonTitle}>
@@ -115,8 +136,10 @@ const styles = StyleSheet.create({
   logo: {
     height: 80,
     width: 80,
-    alignSelf: 'center',
     margin: 15,
+    alignSelf: 'center',
+    borderRadius: 150 / 2,
+    backgroundColor: '#FF9800',
   },
   textStyle: {
     fontSize: 15,
