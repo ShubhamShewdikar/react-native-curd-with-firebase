@@ -43,7 +43,7 @@ export default function AddItem({route}) {
         .then(url => {
           //from url you can fetched the uploaded image easily
           const source = {uri: url};
-          setImage(source);
+          setAvatar(source);
         })
         .catch(e => console.log('getting downloadURL of image error => ', e));
 
@@ -137,13 +137,13 @@ export default function AddItem({route}) {
       } else {
         const source = {uri: response.assets[0]?.uri};
         console.log(source);
-        setImage(source);
+        setAvatar(source);
       }
     });
   };
 
   const uploadImage = async () => {
-    const {uri} = image;
+    const {uri} = avatar;
     const filename = uri.substring(uri.lastIndexOf('/') + 1);
     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
     setUploading(true);
@@ -181,7 +181,13 @@ export default function AddItem({route}) {
           onPress={selectImage}>
           <Image
             style={styles.logo}
-            source={image ? image : require('../../assets/profile_icon.png')}
+            source={
+              avatar
+                ? {
+                    uri: `https://firebasestorage.googleapis.com/v0/b/userlist-d7b56.appspot.com/o/${avatar}?alt=media&token=a4db048d-0eec-469b-a10d-2771ec18173d`,
+                  }
+                : require('../../assets/profile_icon.png')
+            }
           />
         </TouchableOpacity>
         <TouchableOpacity
